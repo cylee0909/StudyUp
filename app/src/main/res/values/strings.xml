@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">StudyUp</string>
+    <string name="accessibility_service_label">好好学习</string>
+    <string name="accessibility_service_description">《礼记·学记》有：“玉不琢，不成器；人不学，不知道。”这句话可以说中国人耳熟能详，意思是玉不加琢磨，不能成为器物；人若不学习，亦不会明白“道”。这个道，既是日常生活中为人处世的道理，又是天地的大道和至理。</string>
+</resources>
