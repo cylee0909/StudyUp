@@ -78,12 +78,12 @@ public class StudyService : AccessibilityService() {
 
     fun startStudy() {
         Toast.makeText(applicationContext, "开始学习", Toast.LENGTH_SHORT).show();
-        play(GestureHelper.random.nextInt(3) + 2, object : Runnable {
-            override fun run() {
-                LogUtil.d("play complete")
-                rootInActiveWindow.findAccessibilityNodeInfosByText("我的")?.firstOrNull()?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-            }
-        })
+//        play(GestureHelper.random.nextInt(3) + 2, object : Runnable {
+//            override fun run() {
+//                LogUtil.d("play complete")
+//                rootInActiveWindow.findAccessibilityNodeInfosByText("我的")?.firstOrNull()?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+//            }
+//        })
     }
 
     override fun onServiceConnected() {

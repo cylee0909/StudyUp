@@ -3,8 +3,11 @@ package com.cylee.studyup;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,8 +16,9 @@ public class GestureHelper {
     static Handler handler = new Handler(Looper.getMainLooper());
     static Random random = new Random(System.currentTimeMillis());
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void monkeyMove(final AccessibilityService service, final int cnt, final Runnable complete) {
-        movePath(service, random.nextBoolean() ? randomXPath() : randomYPath(), new Runnable() {
+        monkeyMove(service,  new Runnable() {
             @Override
             public void run() {
                 if (cnt > 0) {
@@ -28,22 +32,39 @@ public class GestureHelper {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void monkeyMove(AccessibilityService service, Runnable runnable) {
-        LogUtil.d("movePath");
-       movePath(service, random.nextBoolean() ? randomXPath() : randomYPath(), runnable);
+        int c = random.nextInt(4);
+        LogUtil.d("movePath c = "+c);
+        moveDirection(service, c, runnable);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void moveDirection(AccessibilityService service, int action, Runnable runnable) {
+        Path path;
+        switch (action) {
+            case 0 :
+                path = downPath();
+                break;
+            case 1:
+                path = upPath();
+                break;
+            case 2:
+                path = leftPath();
+                break;
+            default:
+                path = rightPath();
+        }
+        movePath(service, path , runnable);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void movePath(AccessibilityService service, Path path, final Runnable complete) {
 //        if (!StudyService.Companion.getStudyLaunched()) return;
-
-        path = new Path();
-        path.moveTo(300, 200);
-        path.lineTo(300, 800);
-
-        int d = random.nextInt(600) +  100;
+        int d = random.nextInt(200) +  100;
         LogUtil.d("movePath d = "+d +" path = "+path);
         final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 0, d, false);
-        service.dispatchGesture(new GestureDescription.Builder().addStroke(sd).build(), new AccessibilityService.GestureResultCallback() {
+        boolean result = service.dispatchGesture(new GestureDescription.Builder().addStroke(sd).build(), new AccessibilityService.GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
                 super.onCompleted(gestureDescription);
@@ -59,30 +80,75 @@ public class GestureHelper {
                 LogUtil.d("movePath onCancelled");
             }
         }, handler);
+
+        LogUtil.d("movePath result = "+result);
     }
 
-    public static Path randomXPath() {
-        return makePath(random.nextFloat() * 0.5f + 0.2f, random.nextFloat() * 0.3f + 0.1f, random.nextFloat() * 0.2f + 0.3f, random.nextFloat() * 0.1f);
+    public static Path downPath() {
+        float diff = randomDiff();
+        float x = centerArea();
+        float y = centerArea() - diff;
+        return makePath(centerArea(), y, x + randomClip(), y + diff * 1.5f);
     }
 
-    public static Path randomYPath() {
-        return makePath(random.nextFloat() * 0.5f + 0.2f, random.nextFloat() * 0.3f + 0.1f, random.nextFloat() * 0.1f, random.nextFloat() * 0.1f + 0.3f);
+    public static Path upPath() {
+        float diff = randomDiff();
+        float x = centerArea();
+        float y = centerArea() + diff;
+        return makePath(centerArea(), y, x + randomClip(), y - diff * 1.5f);
     }
 
-    public static Path makePath(float x, float y, float w, float h) {
-        LogUtil.d("makePath d = "+x+" " +y + " "+w +" "+h);
+    public static Path leftPath() {
+        float diff = randomDiff();
+        float x = centerArea() + diff;
+        float y = centerArea();
+        return makePath(x, y, x - diff * 1.5f, y + randomClip());
+    }
+
+    public static Path rightPath() {
+        float diff = randomDiff();
+        float x = centerArea() - diff;
+        float y = centerArea();
+        return makePath(x, y, x + diff * 2f, y + randomClip());
+    }
+
+    static float randomDiff() {
+        return random.nextFloat() * 0.3f + 0.2f;
+    }
+
+    static float centerArea() {
+        return random.nextFloat() * 0.2f + 0.4f;
+    }
+
+    static float randomClip() {
+        return random.nextFloat() * 0.05f;
+    }
+
+    static float clamp(float value) {
+        float min = random.nextFloat() * 0.1f;
+        float max = 1 - min;
+
+        return Math.min(Math.max(value, min), max);
+    }
+
+    public static Path makePath(float x, float y, float dstX, float dstY) {
+        x = clamp(x);
+        y = clamp(y);
+        dstX = clamp(dstX);
+        dstY = clamp(dstY);
+        LogUtil.d("makePath d = "+x+" " +y + " "+dstX +" "+dstY);
         int dx = (int) (x * ScreenUtil.getScreenWidth());
         int dy = (int) (y * ScreenUtil.getScreenHeight());
-        int dw = (int) (w * ScreenUtil.getScreenWidth());
-        int dh = (int) (h * ScreenUtil.getScreenHeight());
+        int dw = (int) ((dstX - x) * ScreenUtil.getScreenWidth());
+        int dh = (int) ((dstY - y) * ScreenUtil.getScreenHeight());
 
         Path path = new Path();
         path.moveTo(dx, dy);
 //        int cnt = random.nextInt(5) + 4;
-        int cnt = 2;
+        int cnt = 1;
         float diff = (random.nextFloat() - 0.5f) * 0.1f;
         LogUtil.d("makePath d = "+dx+" " +dy + " "+dw +" "+dh +" cnt = "+cnt);
-        for (int i = 0; i < cnt; i++) {
+        for (int i = 1; i < cnt + 1; i++) {
             path.lineTo(dx + dw * (i/(float)cnt + diff), dy + dh *(i/(float)cnt + diff));
         }
         return path;

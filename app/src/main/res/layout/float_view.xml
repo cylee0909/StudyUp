@@ -3,8 +3,23 @@
     android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <Button
-        android:id="@+id/fv_test"
+        android:id="@+id/fv_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="测试"/>
+        android:text="上划"/>
+    <Button
+        android:id="@+id/fv_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下划"/>
+    <Button
+        android:id="@+id/fv_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="左划"/>
+    <Button
+        android:id="@+id/fv_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="右划"/>
 </LinearLayout>
