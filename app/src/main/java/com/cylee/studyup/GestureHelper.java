@@ -25,6 +25,7 @@ public class GestureHelper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void monkeyMove(final AccessibilityService service, final int cnt, final ActionFilter actionFilter, final Runnable complete) {
+        LogUtil.d("monkeyMove cnt = "+cnt);
         monkeyMove(service,  actionFilter, new Runnable() {
             @Override
             public void run() {
@@ -47,9 +48,13 @@ public class GestureHelper {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void monkeyMove(AccessibilityService service, ActionFilter actionFilter, Runnable runnable) {
         int c = random.nextInt(4);
-        LogUtil.d("movePath c = "+c);
+        LogUtil.d("monkey move");
         if (actionFilter == null || actionFilter.canMoveAction(c)) {
             moveDirection(service, c, runnable);
+        } else {
+            if (runnable != null) {
+                runnable.run();
+            }
         }
     }
 
@@ -76,9 +81,9 @@ public class GestureHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static void moveDirection(AccessibilityService service, int action, Runnable runnable) {
+    public static void moveDirection(AccessibilityService service, int direction, Runnable runnable) {
         Path path;
-        switch (action) {
+        switch (direction) {
             case 0 :
                 path = downPath();
                 break;
@@ -91,6 +96,7 @@ public class GestureHelper {
             default:
                 path = rightPath();
         }
+        LogUtil.d("movePath direction = "+ direction);
         movePath(service, path , runnable);
     }
 

@@ -66,6 +66,7 @@ public class ReadHelper {
 
 
     static void playTab(final StudyService service, final int cnt, final Runnable runnable) {
+        LogUtil.d("playTab cnt = "+cnt);
         playTab(service, new Runnable() {
             @Override
             public void run() {
