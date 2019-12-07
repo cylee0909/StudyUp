@@ -117,6 +117,17 @@ public class HelperService extends Service {
             }
         });
 
+        floatView.findViewById(R.id.fv_exit).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (StudyService.INSTANCE != null) {
+                    StudyService.INSTANCE.exit();
+                } else {
+                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
         serviceAlive = true;
     }

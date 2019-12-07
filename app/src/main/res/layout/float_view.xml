@@ -36,5 +36,11 @@
         android:id="@+id/fv_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="随便看看" />
+        android:text="开始学习" />
+
+    <Button
+        android:id="@+id/fv_exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="退出学习" />
 </LinearLayout>

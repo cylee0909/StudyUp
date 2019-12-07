@@ -14,20 +14,14 @@ import java.util.*
 public class StudyService : AccessibilityService() {
     companion object {
         lateinit var INSTANCE: StudyService
-        var studyAppLaunched = false;
+        var studyAppLaunched = false
+        @JvmField
+        var alive = false
         var videoCompleteRunnable : Runnable? = null
     }
 
-    var handler = Handler(Looper.getMainLooper());
-
-    var homeID = arrayListOf<String>(
-        "百灵",
-        "home_bottom_tab_icon_large",
-        "电视台",
-        "电台"
-    );
-
     override fun onInterrupt() {
+        stopHelpService()
     }
 
     fun registerVideoComplete(runnable: Runnable) {
@@ -45,6 +39,12 @@ public class StudyService : AccessibilityService() {
                 videoCompleteRunnable?.run()
                 videoCompleteRunnable = null
             }
+        }
+    }
+
+    fun stopHelpService() {
+        if (HelperService.serviceAlive) {
+            stopService(Intent(applicationContext, HelperService::class.java))
         }
     }
 
@@ -69,59 +69,27 @@ public class StudyService : AccessibilityService() {
             } else {
                 if (studyAppLaunched) {
                     studyAppLaunched = false;
-                    if (HelperService.serviceAlive) {
-                        stopService(Intent(applicationContext, HelperService::class.java))
-                    }
+                    stopHelpService()
                 }
             }
         }
     }
 
-    fun play(count: Int, complete: Runnable?) {
-        LogUtil.d("play " + count)
-        playTab(object : Runnable {
-            override fun run() {
-                if (count > 0 && studyAppLaunched) {
-                    play(count - 1, complete)
-                } else {
-                    complete?.run()
-                }
-            }
-        })
+    fun exit() {
+        disableSelf()
+        stopSelf()
     }
 
-
-    fun playTab(complete: Runnable?) {
-        LogUtil.d("playTab ")
-        var random = homeID[Random().nextInt(homeID.size)];
-        var node = rootInActiveWindow.findAccessibilityNodeInfosByText(random)?.firstOrNull()
-        if (node == null) {
-            node = rootInActiveWindow.findAccessibilityNodeInfosByViewId(random)?.firstOrNull()
-        }
-        node?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-        LogUtil.d("playTab click "+random)
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                LogUtil.d("playTab monkey move")
-                GestureHelper.monkeyMove(this@StudyService, GestureHelper.random.nextInt(10) + 1, {
-                    complete?.run()
-                })
-            }
-        }, 1000)
+    override fun onDestroy() {
+        super.onDestroy()
+        stopHelpService()
+        alive = false;
     }
 
-
-    public fun startStudy() {
-        play(GestureHelper.random.nextInt(3) + 2, object : Runnable {
-            override fun run() {
-                LogUtil.d("play complete")
-                rootInActiveWindow.findAccessibilityNodeInfosByText("我的")?.firstOrNull()?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-            }
-        })
-    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        alive = true;
         INSTANCE = this;
         LogUtil.d("onServiceConnected")
     }
@@ -129,5 +97,6 @@ public class StudyService : AccessibilityService() {
     override fun onUnbind(intent: Intent?): Boolean {
         return super.onUnbind(intent)
         LogUtil.d("onUnbind")
+        stopHelpService()
     }
 }

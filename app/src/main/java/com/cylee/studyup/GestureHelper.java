@@ -129,6 +129,7 @@ public class GestureHelper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void movePath(AccessibilityService service, Path path, int duration, final Runnable complete) {
+        if (!StudyService.INSTANCE.alive) return;
         LogUtil.d("movePath d = "+duration +" path = "+path);
         final AtomicBoolean comFlag = new AtomicBoolean(false);
         final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 0, duration, false);

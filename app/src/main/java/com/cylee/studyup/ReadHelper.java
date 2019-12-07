@@ -28,6 +28,80 @@ public class ReadHelper {
         return 2000 + (int)(2000 * random.nextFloat());
     }
 
+    public static void startLearning(final StudyService service) {
+        LogUtil.d("startLearning");
+        playTab(service, random.nextInt(2) + 2, new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.d("playTab complete");
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        LogUtil.d("readArticle start");
+                        readArticle(service, new Runnable() {
+                            @Override
+                            public void run() {
+                                LogUtil.d("readArticle complete");
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        LogUtil.d("watchVideo start");
+                                        watchVideo(service, new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                LogUtil.d("watchVideo end");
+                                                service.exit();
+                                            }
+                                        });
+                                    }
+                                }, randomWaitTime());
+                            }
+                        });
+                    }
+                }, randomWaitTime());
+            }
+        });
+    }
+
+
+    static void playTab(final StudyService service, final int cnt, final Runnable runnable) {
+        playTab(service, new Runnable() {
+            @Override
+            public void run() {
+                if (cnt > 0) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            playTab(service, cnt - 1, runnable);
+                        }
+                    }, randomWaitTime());
+                } else {
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            }
+        });
+    }
+
+    static void playTab(final StudyService service, final Runnable runnable) {
+        LogUtil.d("playTab ");
+        int index = random.nextInt(homeID.length);
+        selTab(service, index, new Runnable(){
+            @Override
+            public void run() {
+                GestureHelper.monkeyMove(service, GestureHelper.random.nextInt(10) + 1, new Runnable() {
+                    @Override
+                    public void run() {
+                        if (runnable != null) {
+                            runnable.run();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
 
     public static void readArticle(final StudyService service, final Runnable complete) {
         selTab(service, TAB_HOME, new Runnable() {
