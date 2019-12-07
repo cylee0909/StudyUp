@@ -62,9 +62,9 @@ public class StudyService : AccessibilityService() {
             if (event.packageName.equals("cn.xuexi.android")) {
                 if (!studyAppLaunched) {
                     studyAppLaunched = true;
-                    if (!HelperService.serviceAlive) {
-                        startForegroundService(Intent(applicationContext, HelperService::class.java))
-                    }
+                }
+                if (!HelperService.serviceAlive) {
+                    startForegroundService(Intent(applicationContext, HelperService::class.java))
                 }
             } else {
                 if (studyAppLaunched) {

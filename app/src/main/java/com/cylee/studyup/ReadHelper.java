@@ -29,6 +29,7 @@ public class ReadHelper {
     }
 
     public static void startLearning(final StudyService service) {
+        handler.removeCallbacksAndMessages(null);
         LogUtil.d("startLearning");
         playTab(service, random.nextInt(2) + 2, new Runnable() {
             @Override
@@ -86,11 +87,21 @@ public class ReadHelper {
 
     static void playTab(final StudyService service, final Runnable runnable) {
         LogUtil.d("playTab ");
-        int index = random.nextInt(homeID.length);
+        final int index = random.nextInt(homeID.length);
         selTab(service, index, new Runnable(){
             @Override
             public void run() {
-                GestureHelper.monkeyMove(service, GestureHelper.random.nextInt(10) + 1, new Runnable() {
+                GestureHelper.monkeyMove(service, GestureHelper.random.nextInt(10) + 1,
+                        index == TAB_HOME ? new GestureHelper.ActionFilter() {
+                            @Override
+                            public boolean canMoveAction(int acition) {
+                                if (acition >= 2) {
+                                    return false;
+                                }
+                                return true;
+                            }
+                        } : null,
+                        new Runnable() {
                     @Override
                     public void run() {
                         if (runnable != null) {
@@ -104,6 +115,7 @@ public class ReadHelper {
 
 
     public static void readArticle(final StudyService service, final Runnable complete) {
+        handler.removeCallbacksAndMessages(null);
         selTab(service, TAB_HOME, new Runnable() {
             @Override
             public void run() {
@@ -130,6 +142,7 @@ public class ReadHelper {
     }
 
     public static void readArticleByCount(final StudyService service, final int cnt, final Runnable runnable) {
+        LogUtil.d("read article cnt = "+cnt);
         readSigleArticle(service, new Runnable() {
             @Override
             public void run() {
@@ -188,6 +201,7 @@ public class ReadHelper {
 
 
     public static void watchVideo(final StudyService service, final Runnable complete) {
+        handler.removeCallbacksAndMessages(null);
         selTab(service, TAB_DIAN_SHI_TAI, new Runnable() {
             @Override
             public void run() {
@@ -203,6 +217,7 @@ public class ReadHelper {
     }
 
     public static void watchVideosByCount(final StudyService service, final int cnt, final Runnable runnable) {
+        LogUtil.d("watch video cnt = "+cnt);
         watchSigleVideo(service, new Runnable() {
             @Override
             public void run() {
@@ -224,7 +239,7 @@ public class ReadHelper {
 
     public static void watchSigleVideo(final StudyService service, final Runnable runnable) {
         // 向下翻翻
-        GestureHelper.moveDirection(service, 1, random.nextInt(3), new Runnable() {
+        GestureHelper.moveDirection(service, random.nextBoolean() ? 1 : 2, random.nextInt(2), new Runnable() {
             @Override
             public void run() {
                 handler.postDelayed(new Runnable() {
@@ -276,7 +291,7 @@ public class ReadHelper {
     }
 
 
-    public static void selTab(AccessibilityService service, int tabIndex, Runnable runnable) {
+    public static void selTab(AccessibilityService service, int tabIndex, final Runnable runnable) {
         LogUtil.d("selTab tabIndex = " + tabIndex);
         Rect rect = new Rect();
         AccessibilityNodeInfo node = service.getRootInActiveWindow();
@@ -288,6 +303,18 @@ public class ReadHelper {
 //            } else {
                 nodeInfos = node.findAccessibilityNodeInfosByText(id);
 //            }
+            if (tabIndex == TAB_HOME) {
+                GestureHelper.tabHome(service, new Runnable() {
+                    @Override
+                    public void run() {
+                        if (runnable != null) {
+                            handler.postDelayed(runnable, 500);
+                        }
+                    }
+                });
+                return;
+            }
+
             if (nodeInfos != null && nodeInfos.size() > 0) {
                 for (AccessibilityNodeInfo nodeInfo : nodeInfos) {
                     if (nodeInfo.isClickable()) {

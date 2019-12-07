@@ -10,16 +10,9 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 
-import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScreenUtil {
-    private static int DPI_LEVEL = -1;
-    public static final int LEVEL_MDPI = 1;
-    public static final int LEVEL_HDPI = 2;
-    public static final int LEVEL_XHDPI = 3;
-    public static final int LEVEL_XXHDPI = 4;
-
     public static int dp2px(float dp) {
         final float scale = App.getApplication().getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
@@ -39,27 +32,6 @@ public class ScreenUtil {
         Toast.makeText(App.getApplication(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 将px值转换为sp值，保证文字大小不变
-     *
-     * @param pxValue
-     * @return
-     */
-    public static int px2sp(float pxValue) {
-        final float fontScale = App.getApplication().getResources().getDisplayMetrics().scaledDensity;
-        return (int) (pxValue / fontScale + 0.5f);
-    }
-
-    /**
-     * 将sp值转换为px值，保证文字大小不变
-     *
-     * @param spValue
-     * @return
-     */
-    public static int sp2px(float spValue) {
-        final float fontScale = App.getApplication().getResources().getDisplayMetrics().scaledDensity;
-        return (int) (spValue * fontScale + 0.5f);
-    }
 
     public static Rect getViewRect(View view, Rect rect) {
         if (rect == null) {

@@ -105,12 +105,15 @@ public class HelperService extends Service {
             }
         });
 
+
         floatView.findViewById(R.id.fv_play).setOnClickListener(new View.OnClickListener(){
+            int i = 0;
             @Override
             public void onClick(View v) {
                 if (StudyService.INSTANCE != null) {
 //                    StudyService.INSTANCE.startStudy();
-                    ReadHelper.readArticle(StudyService.INSTANCE, null);
+                    ReadHelper.startLearning(StudyService.INSTANCE);
+//                    ReadHelper.selTab(StudyService.INSTANCE, (i++) % 4, null);
                 } else {
                     Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
                 }

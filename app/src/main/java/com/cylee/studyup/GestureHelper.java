@@ -5,7 +5,6 @@ import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 
 import androidx.annotation.RequiresApi;
 
@@ -13,19 +12,27 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GestureHelper {
-    static Handler handler = new Handler(Looper.getMainLooper());
+    static Handler handler = ReadHelper.handler;
     static Random random = new Random(System.currentTimeMillis());
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    interface ActionFilter {
+        boolean canMoveAction(int acition);
+    }
+
     public static void monkeyMove(final AccessibilityService service, final int cnt, final Runnable complete) {
-        monkeyMove(service,  new Runnable() {
+        monkeyMove(service, cnt, null, complete);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void monkeyMove(final AccessibilityService service, final int cnt, final ActionFilter actionFilter, final Runnable complete) {
+        monkeyMove(service,  actionFilter, new Runnable() {
             @Override
             public void run() {
                 if (cnt > 0) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            monkeyMove(service, cnt -1, complete);
+                            monkeyMove(service, cnt -1, actionFilter, complete);
                         }
                     }, 2000 + (int)(random.nextFloat() * 2000));
                 } else {
@@ -38,10 +45,12 @@ public class GestureHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static void monkeyMove(AccessibilityService service, Runnable runnable) {
+    public static void monkeyMove(AccessibilityService service, ActionFilter actionFilter, Runnable runnable) {
         int c = random.nextInt(4);
         LogUtil.d("movePath c = "+c);
-        moveDirection(service, c, runnable);
+        if (actionFilter == null || actionFilter.canMoveAction(c)) {
+            moveDirection(service, c, runnable);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -86,6 +95,15 @@ public class GestureHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void tabHome(AccessibilityService service, final Runnable complete) {
+        LogUtil.d("tabHome");
+        float x = 0.5f;
+        float y = 1f;
+        Path path = makePath(x, y, x, y, false);
+        movePath(service, path, complete);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void tabCenter(AccessibilityService service, final Runnable complete) {
         LogUtil.d("tabCenter");
         float x = centerArea();
@@ -123,7 +141,7 @@ public class GestureHelper {
         float x = centerArea();
         float y = centerArea();
         float diff = random.nextFloat() * 0.005f;
-        Path path = makePath(x, y, x + diff, clamp(y - random.nextFloat() * 0.3f));
+        Path path = makePath(x, y, x + diff, clamp(y - random.nextFloat() * 0.2f + 0.1f));
         movePath(service, path, 1000 + random.nextInt(200), complete);
     }
 
@@ -222,10 +240,16 @@ public class GestureHelper {
     }
 
     public static Path makePath(float x, float y, float dstX, float dstY) {
-        x = clamp(x);
-        y = clamp(y);
-        dstX = clamp(dstX);
-        dstY = clamp(dstY);
+        return makePath(x, y, dstX, dstY, true);
+    }
+
+    public static Path makePath(float x, float y, float dstX, float dstY, boolean clamp) {
+        if (clamp) {
+            x = clamp(x);
+            y = clamp(y);
+            dstX = clamp(dstX);
+            dstY = clamp(dstY);
+        }
         LogUtil.d("makePath d = "+x+" " +y + " "+dstX +" "+dstY);
         int dx = (int) (x * ScreenUtil.getScreenWidth());
         int dy = (int) (y * ScreenUtil.getScreenHeight());
