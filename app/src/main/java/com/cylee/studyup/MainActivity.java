@@ -21,16 +21,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        boolean checkPermission = PermissionUtil.getAppOps(this);
-        boolean checkService = checkAccessibilityOn(this);
-
-        if (!checkPermission) {
-            ScreenUtil.toast("请开启权限");
-        }
-
-        if (!checkService) {
-            ScreenUtil.toast("请开启服务");
-        }
 
         findViewById(R.id.am_permission).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +37,29 @@ public class MainActivity extends Activity {
         });
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkEnv();
+    }
+
+    void checkEnv() {
+        boolean checkPermission = PermissionUtil.getAppOps(this);
+        boolean checkService = checkAccessibilityOn(this);
+
+        if (!checkPermission) {
+            ScreenUtil.toast("请开启权限");
+            return;
+        }
+
+        if (!checkService) {
+            ScreenUtil.toast("请开启服务");
+            return;
+        }
+
+        ScreenUtil.toast("可以开始学习了，请打开学习强国学习！");
+    }
 
     public static boolean checkAccessibilityOn(Context context) {
         return isAccessibilitySettingsOn(context, StudyService.class);
