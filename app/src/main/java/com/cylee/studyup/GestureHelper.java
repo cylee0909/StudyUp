@@ -141,8 +141,8 @@ public class GestureHelper {
         float x = centerArea();
         float y = centerArea();
         float diff = random.nextFloat() * 0.005f;
-        Path path = makePath(x, y, x + diff, clamp(y - random.nextFloat() * 0.2f + 0.1f));
-        movePath(service, path, 1000 + random.nextInt(200), complete);
+        Path path = makePath(x, y, x + diff, clamp(y - (random.nextFloat() * 0.2f + 0.1f)));
+        movePath(service, path, 400 + random.nextInt(200), complete);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

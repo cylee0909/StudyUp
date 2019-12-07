@@ -1,21 +1,17 @@
 package com.cylee.studyup;
 
-import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.GestureDescription;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -38,8 +34,6 @@ public class HelperService extends Service {
         super.onCreate();
 
         Notification notification = null;
-
-
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,"HELP_SERVICE_NAME",
                     NotificationManager.IMPORTANCE_HIGH);
@@ -54,7 +48,6 @@ public class HelperService extends Service {
         }
 
         startForeground(1, notification);
-
         LogUtil.d("HelperService onCreate");
         floatView = View.inflate(getApplicationContext(), R.layout.float_view, null);
         WindowManager windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
@@ -112,8 +105,9 @@ public class HelperService extends Service {
             public void onClick(View v) {
                 if (StudyService.INSTANCE != null) {
 //                    StudyService.INSTANCE.startStudy();
-                    ReadHelper.startLearning(StudyService.INSTANCE);
+//                    ReadHelper.startLearning(StudyService.INSTANCE);
 //                    ReadHelper.selTab(StudyService.INSTANCE, (i++) % 4, null);
+                    ReadHelper.navNextPageAndCheck(StudyService.INSTANCE, null, null);
                 } else {
                     Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
                 }

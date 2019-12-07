@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ReadHelper {
     static Handler handler = new Handler(Looper.getMainLooper());
     static final int TAB_BAILING = 0;
-    static final int TAB_HOME=1;
-    static final int TAB_DIAN_SHI_TAI=2;
-    static final int TAB_DIAN_TAI=3;
+    static final int TAB_HOME = 1;
+    static final int TAB_DIAN_SHI_TAI = 2;
+    static final int TAB_DIAN_TAI = 3;
     static Random random = new Random(System.currentTimeMillis());
     static String[] homeID = {
             "百灵",
@@ -25,7 +25,7 @@ public class ReadHelper {
     };
 
     public static int randomWaitTime() {
-        return 2000 + (int)(2000 * random.nextFloat());
+        return 2000 + (int) (2000 * random.nextFloat());
     }
 
     public static void startLearning(final StudyService service) {
@@ -88,7 +88,7 @@ public class ReadHelper {
     static void playTab(final StudyService service, final Runnable runnable) {
         LogUtil.d("playTab ");
         final int index = random.nextInt(homeID.length);
-        selTab(service, index, new Runnable(){
+        selTab(service, index, new Runnable() {
             @Override
             public void run() {
                 GestureHelper.monkeyMove(service, GestureHelper.random.nextInt(10) + 1,
@@ -102,13 +102,13 @@ public class ReadHelper {
                             }
                         } : null,
                         new Runnable() {
-                    @Override
-                    public void run() {
-                        if (runnable != null) {
-                            runnable.run();
-                        }
-                    }
-                });
+                            @Override
+                            public void run() {
+                                if (runnable != null) {
+                                    runnable.run();
+                                }
+                            }
+                        });
             }
         });
     }
@@ -142,7 +142,7 @@ public class ReadHelper {
     }
 
     public static void readArticleByCount(final StudyService service, final int cnt, final Runnable runnable) {
-        LogUtil.d("read article cnt = "+cnt);
+        LogUtil.d("read article cnt = " + cnt);
         readSigleArticle(service, new Runnable() {
             @Override
             public void run() {
@@ -164,33 +164,35 @@ public class ReadHelper {
 
     private static void readSigleArticle(final StudyService service, final Runnable runnable) {
         // 向下翻翻
-        GestureHelper.moveDirection(service, 1, random.nextInt(2) + 1, new Runnable() {
+        GestureHelper.moveDirection(service, 1, random.nextInt(1), new Runnable() {
             @Override
             public void run() {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        GestureHelper.tabCenter(service, new Runnable() {
+                        navNextPageAndCheck(service, new Runnable() {
                             @Override
                             public void run() {
                                 LogUtil.d("tabCenter complete");
-                                handler.postDelayed(new Runnable() {
+                                GestureHelper.clipMoveUp(service, 3 + random.nextInt(3), new Runnable() {
                                     @Override
                                     public void run() {
-                                        GestureHelper.clipMoveUp(service, 3 + random.nextInt(3), new Runnable() {
+                                        LogUtil.d("clipMoveUp complete");
+                                        handler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                LogUtil.d("clipMoveUp complete");
-                                                handler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        clickBackKey(service, runnable);
-                                                    }
-                                                }, randomWaitTime());
+                                                clickBackKey(service, runnable);
                                             }
-                                        });
+                                        }, randomWaitTime());
                                     }
-                                }, randomWaitTime());
+                                });
+                            }
+                        }, new Runnable() {
+                            @Override
+                            public void run() {
+                                if (runnable != null) {
+                                    runnable.run();
+                                }
                             }
                         });
                     }
@@ -199,6 +201,28 @@ public class ReadHelper {
         });
     }
 
+    public static void navNextPageAndCheck(final StudyService service, final Runnable success, final Runnable fail) {
+        service.resetWindowStateChange();
+        GestureHelper.tabCenter(service, new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (service.hasWindowStateChanged()) {
+                            if (success != null) {
+                                success.run();
+                            }
+                        } else {
+                            if (fail != null) {
+                                fail.run();
+                            }
+                        }
+                    }
+                }, randomWaitTime());
+            }
+        });
+    }
 
     public static void watchVideo(final StudyService service, final Runnable complete) {
         handler.removeCallbacksAndMessages(null);
@@ -217,7 +241,7 @@ public class ReadHelper {
     }
 
     public static void watchVideosByCount(final StudyService service, final int cnt, final Runnable runnable) {
-        LogUtil.d("watch video cnt = "+cnt);
+        LogUtil.d("watch video cnt = " + cnt);
         watchSigleVideo(service, new Runnable() {
             @Override
             public void run() {
@@ -245,7 +269,7 @@ public class ReadHelper {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        GestureHelper.tabCenter(service, new Runnable() {
+                        navNextPageAndCheck(service, new Runnable() {
                             @Override
                             public void run() {
                                 LogUtil.d("tabCenter complete");
@@ -274,6 +298,13 @@ public class ReadHelper {
                                     }
                                 });
                             }
+                        }, new Runnable() {
+                            @Override
+                            public void run() {
+                                if (runnable != null) {
+                                    runnable.run();
+                                }
+                            }
                         });
                     }
                 }, randomWaitTime());
@@ -301,7 +332,7 @@ public class ReadHelper {
 //            if (tabIndex == TAB_HOME) {
 //                nodeInfos = node.findAccessibilityNodeInfosByViewId(id);
 //            } else {
-                nodeInfos = node.findAccessibilityNodeInfosByText(id);
+            nodeInfos = node.findAccessibilityNodeInfosByText(id);
 //            }
             if (tabIndex == TAB_HOME) {
                 GestureHelper.tabHome(service, new Runnable() {
@@ -320,7 +351,8 @@ public class ReadHelper {
                     if (nodeInfo.isClickable()) {
                         nodeInfo.getBoundsInScreen(rect);
                         if (rect.bottom < ScreenUtil.getScreenHeight() / 2) continue;
-                        if (rect.left > rect.right || rect.left < 0 || rect.right > ScreenUtil.getScreenWidth()) continue;
+                        if (rect.left > rect.right || rect.left < 0 || rect.right > ScreenUtil.getScreenWidth())
+                            continue;
                         if (nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
                             if (runnable != null) {
                                 handler.postDelayed(runnable, 500);
