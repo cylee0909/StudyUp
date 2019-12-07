@@ -25,6 +25,7 @@ import androidx.core.app.NotificationCompat;
 public class HelperService extends Service {
     private static final String CHANNEL_ID = "HELP_SERVICE";
     View floatView;
+    static boolean serviceAlive;
 
     @Nullable
     @Override
@@ -66,12 +67,13 @@ public class HelperService extends Service {
         } else {
             params.type =WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         }
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
         params.format= PixelFormat.TRANSLUCENT;
         params.width = WindowManager.LayoutParams.WRAP_CONTENT;
         params.height =WindowManager.LayoutParams.WRAP_CONTENT;
         params.gravity = Gravity.RIGHT | Gravity.TOP;
         params.alpha = 0.5f;
+        params.y = ScreenUtil.dp2px(100);
         windowManager.addView(floatView, params);
 
         floatView.findViewById(R.id.fv_up).setOnClickListener(new View.OnClickListener() {
@@ -103,6 +105,20 @@ public class HelperService extends Service {
             }
         });
 
+        floatView.findViewById(R.id.fv_play).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (StudyService.INSTANCE != null) {
+//                    StudyService.INSTANCE.startStudy();
+                    ReadHelper.readArticle(StudyService.INSTANCE, null);
+                } else {
+                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        serviceAlive = true;
     }
 
     void moveAction(int action) {
@@ -116,6 +132,8 @@ public class HelperService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        serviceAlive = false;
+        stopForeground(true);
         LogUtil.d("HelperService onDestroy");
         WindowManager windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
         windowManager.removeView(floatView);

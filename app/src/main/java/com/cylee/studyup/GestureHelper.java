@@ -22,7 +22,12 @@ public class GestureHelper {
             @Override
             public void run() {
                 if (cnt > 0) {
-                    monkeyMove(service, cnt -1, complete);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            monkeyMove(service, cnt -1, complete);
+                        }
+                    }, 2000 + (int)(random.nextFloat() * 2000));
                 } else {
                     if (complete != null) {
                         complete.run();
@@ -37,6 +42,28 @@ public class GestureHelper {
         int c = random.nextInt(4);
         LogUtil.d("movePath c = "+c);
         moveDirection(service, c, runnable);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void moveDirection(final AccessibilityService service, final int action, final int cnt, final Runnable runnable) {
+        LogUtil.d("moveDirection action = "+action +" cnt = "+cnt);
+        moveDirection(service, action, new Runnable() {
+            @Override
+            public void run() {
+                if (cnt > 0) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            moveDirection(service, action, cnt - 1, runnable);
+                        }
+                    }, 2000 + (int)(2000 * random.nextFloat()));
+                } else {
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -59,18 +86,62 @@ public class GestureHelper {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static void movePath(AccessibilityService service, Path path, final Runnable complete) {
-//        if (!StudyService.Companion.getStudyLaunched()) return;
-        int d = random.nextInt(200) +  100;
-        LogUtil.d("movePath d = "+d +" path = "+path);
-        final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 0, d, false);
+    public static void tabCenter(AccessibilityService service, final Runnable complete) {
+        LogUtil.d("tabCenter");
+        float x = centerArea();
+        float y = centerArea();
+        float diff = random.nextFloat() * 0.005f;
+        Path path = makePath(x, y, x + diff, y + diff);
+        movePath(service, path, complete);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void clipMoveUp(final AccessibilityService service, final int cnt, final Runnable runnable) {
+        LogUtil.d("clipMoveUp cnt = "+cnt);
+        clipMoveUp(service, new Runnable() {
+            @Override
+            public void run() {
+                if (cnt > 0) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            clipMoveUp(service, cnt - 1, runnable);
+                        }
+                    }, 3000 + (int)(2000 * random.nextFloat()));
+                } else {
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void clipMoveUp(AccessibilityService service, Runnable complete) {
+        LogUtil.d("clipMoveUp");
+        float x = centerArea();
+        float y = centerArea();
+        float diff = random.nextFloat() * 0.005f;
+        Path path = makePath(x, y, x + diff, clamp(y - random.nextFloat() * 0.3f));
+        movePath(service, path, 1000 + random.nextInt(200), complete);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void movePath(AccessibilityService service, Path path, int duration, final Runnable complete) {
+        LogUtil.d("movePath d = "+duration +" path = "+path);
+        final AtomicBoolean comFlag = new AtomicBoolean(false);
+        final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 0, duration, false);
         boolean result = service.dispatchGesture(new GestureDescription.Builder().addStroke(sd).build(), new AccessibilityService.GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
                 super.onCompleted(gestureDescription);
-                LogUtil.d("movePath onCompleted");
-                if (complete != null) {
-                    complete.run();
+                if (!comFlag.get()) {
+                    LogUtil.d("movePath onCompleted");
+                    comFlag.set(true);
+                    if (complete != null) {
+                        complete.run();
+                    }
                 }
             }
 
@@ -80,8 +151,26 @@ public class GestureHelper {
                 LogUtil.d("movePath onCancelled");
             }
         }, handler);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!comFlag.get()) {
+                    LogUtil.d("movePath onCompleted by hand");
+                    comFlag.set(true);
+                    if (complete != null) {
+                        complete.run();
+                    }
+                }
+            }
+        }, duration + 100);
 
         LogUtil.d("movePath result = "+result);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void movePath(AccessibilityService service, Path path, final Runnable complete) {
+        int d = random.nextInt(200) +  100;
+        movePath(service, path, d, complete);
     }
 
     public static Path downPath() {
@@ -95,7 +184,7 @@ public class GestureHelper {
         float diff = randomDiff();
         float x = centerArea();
         float y = centerArea() + diff;
-        return makePath(centerArea(), y, x + randomClip(), y - diff * 1.5f);
+        return makePath(x, y, x + randomClip(), y - diff * 1.5f);
     }
 
     public static Path leftPath() {
@@ -125,7 +214,7 @@ public class GestureHelper {
     }
 
     static float clamp(float value) {
-        float min = random.nextFloat() * 0.1f;
+        float min = random.nextFloat() * 0.1f + 0.1f;
         float max = 1 - min;
 
         return Math.min(Math.max(value, min), max);

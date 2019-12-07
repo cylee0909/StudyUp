@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="100dp"
+    android:orientation="vertical">
+
     <Button
         android:id="@+id/fv_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="上划"/>
+        android:visibility="gone"
+        android:text="上划" />
+
     <Button
         android:id="@+id/fv_down"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="下划"/>
+        android:visibility="gone"
+        android:text="下划" />
+
     <Button
         android:id="@+id/fv_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="左划"/>
+        android:visibility="gone"
+        android:text="左划" />
+
     <Button
         android:id="@+id/fv_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="右划"/>
+        android:visibility="gone"
+        android:text="右划" />
+    <Button
+        android:id="@+id/fv_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="随便看看" />
 </LinearLayout>
