@@ -131,7 +131,7 @@ public class GestureHelper {
                         public void run() {
                             clipMoveUp(service, cnt - 1, runnable);
                         }
-                    }, 3000 + (int)(2000 * random.nextFloat()));
+                    }, 10000 + (int)(2000 * random.nextFloat()));
                 } else {
                     if (runnable != null) {
                         runnable.run();

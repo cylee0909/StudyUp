@@ -28,7 +28,11 @@ public class ReadHelper {
         return 2000 + (int) (2000 * random.nextFloat());
     }
 
-    public static void startLearning(final StudyService service) {
+    public static void startLearning(final StudyService service, int loopCnt) {
+        innerLearning(service, loopCnt);
+    }
+
+    static void innerLearning(final StudyService service, final int loopCnt) {
         handler.removeCallbacksAndMessages(null);
         LogUtil.d("startLearning");
         playTab(service, random.nextInt(2) + 2, new Runnable() {
@@ -50,8 +54,13 @@ public class ReadHelper {
                                         watchVideo(service, new Runnable() {
                                             @Override
                                             public void run() {
+                                                int currentCnt = loopCnt - 1;
                                                 LogUtil.d("watchVideo end");
-                                                service.exit();
+                                                if (currentCnt <= 0) {
+                                                    service.exit();
+                                                } else {
+                                                    innerLearning(service, currentCnt);
+                                                }
                                             }
                                         });
                                     }
@@ -92,7 +101,7 @@ public class ReadHelper {
         selTab(service, index, new Runnable() {
             @Override
             public void run() {
-                GestureHelper.monkeyMove(service, GestureHelper.random.nextInt(10) + 1,
+                GestureHelper.monkeyMove(service, GestureHelper.random.nextInt(5) + 1,
                         index == TAB_HOME ? new GestureHelper.ActionFilter() {
                             @Override
                             public boolean canMoveAction(int acition) {
@@ -128,7 +137,7 @@ public class ReadHelper {
                             @Override
                             public void run() {
                                 // 再左划一次
-                                GestureHelper.moveDirection(service, 2, random.nextInt(2) + 1, new Runnable() {
+                                GestureHelper.moveDirection(service, 2, random.nextInt(1) + 1, new Runnable() {
                                     @Override
                                     public void run() {
                                         readArticleByCount(service, 6 + random.nextInt(2), complete);
@@ -175,7 +184,7 @@ public class ReadHelper {
                             @Override
                             public void run() {
                                 LogUtil.d("tabCenter complete");
-                                GestureHelper.clipMoveUp(service, 3 + random.nextInt(3), new Runnable() {
+                                GestureHelper.clipMoveUp(service, 5 + random.nextInt(3), new Runnable() {
                                     @Override
                                     public void run() {
                                         LogUtil.d("clipMoveUp complete");
@@ -215,9 +224,15 @@ public class ReadHelper {
                                 success.run();
                             }
                         } else {
-                            if (fail != null) {
-                                fail.run();
-                            }
+                            // 如果失败，左右翻翻
+                            GestureHelper.moveDirection(service, random.nextBoolean() ? 2 : 3, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (fail != null) {
+                                        fail.run();
+                                    }
+                                }
+                            });
                         }
                     }
                 }, randomWaitTime());
@@ -231,7 +246,7 @@ public class ReadHelper {
             @Override
             public void run() {
                 // 随便翻翻
-                GestureHelper.monkeyMove(service, random.nextInt(3), new Runnable() {
+                GestureHelper.monkeyMove(service, random.nextInt(1), new Runnable() {
                     @Override
                     public void run() {
                         watchVideosByCount(service, 6 + random.nextInt(2), complete);
@@ -264,7 +279,7 @@ public class ReadHelper {
 
     public static void watchSigleVideo(final StudyService service, final Runnable runnable) {
         // 向下翻翻
-        GestureHelper.moveDirection(service, random.nextBoolean() ? 1 : 2, random.nextInt(2), new Runnable() {
+        GestureHelper.moveDirection(service, 1, random.nextInt(2), new Runnable() {
             @Override
             public void run() {
                 handler.postDelayed(new Runnable() {
@@ -285,6 +300,15 @@ public class ReadHelper {
                                         }
                                     }, (int) (1.5 * 60 * 1000 + randomWaitTime()));
                                 }
+
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!completeFlag.get()) {
+                                            service.handCompleteVideo();
+                                        }
+                                    }
+                                }, (int) (3 * 60 * 1000 + randomWaitTime()));
 
                                 service.registerVideoComplete(new Runnable() {
                                     @Override

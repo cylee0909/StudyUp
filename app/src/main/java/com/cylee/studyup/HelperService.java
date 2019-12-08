@@ -105,7 +105,7 @@ public class HelperService extends Service {
             public void onClick(View v) {
                 if (StudyService.INSTANCE != null) {
 //                    StudyService.INSTANCE.startStudy();
-                    ReadHelper.startLearning(StudyService.INSTANCE);
+                    ReadHelper.startLearning(StudyService.INSTANCE, 2);
 //                    ReadHelper.selTab(StudyService.INSTANCE, (i++) % 4, null);
 //                    ReadHelper.navNextPageAndCheck(StudyService.INSTANCE, null, null);
                 } else {
