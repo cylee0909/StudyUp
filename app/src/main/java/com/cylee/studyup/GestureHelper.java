@@ -2,9 +2,12 @@ package com.cylee.studyup;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
+import android.content.Context;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
+import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
 
@@ -12,6 +15,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GestureHelper {
+    static Point tmpPoint = new Point();
     static Handler handler = ReadHelper.handler;
     static Random random = new Random(System.currentTimeMillis());
 
@@ -103,9 +107,10 @@ public class GestureHelper {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void tabHome(AccessibilityService service, final Runnable complete) {
         LogUtil.d("tabHome");
-        float x = 0.5f;
-        float y = 1f;
-        Path path = makePath(x, y, x, y, false);
+        ScreenUtil.getRealSize(tmpPoint);
+        float x = tmpPoint.x / 2;
+        float y = tmpPoint.y - ScreenUtil.dp2px(10);
+        Path path = makePathPx(x, y, 0, 0);
         movePath(service, path, complete);
     }
 
@@ -264,13 +269,20 @@ public class GestureHelper {
 
         Path path = new Path();
         path.moveTo(dx, dy);
-//        int cnt = random.nextInt(5) + 4;
         int cnt = 1;
         float diff = (random.nextFloat() - 0.5f) * 0.1f;
         LogUtil.d("makePath d = "+dx+" " +dy + " "+dw +" "+dh +" cnt = "+cnt);
         for (int i = 1; i < cnt + 1; i++) {
             path.lineTo(dx + dw * (i/(float)cnt + diff), dy + dh *(i/(float)cnt + diff));
         }
+        return path;
+    }
+
+    public static Path makePathPx(float x, float y, float dw, float dh) {
+        Path path = new Path();
+        path.moveTo(x, y);
+        LogUtil.d("makePathPx d = "+x+" " +y + " "+dw +" "+dh);
+        path.lineTo(x + dw, y + dh);
         return path;
     }
 }

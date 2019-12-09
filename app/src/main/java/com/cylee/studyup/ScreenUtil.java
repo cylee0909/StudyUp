@@ -2,6 +2,7 @@ package com.cylee.studyup;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -59,6 +60,14 @@ public class ScreenUtil {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) App.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
         return metrics;
+    }
+
+    public static Point getRealSize(Point in) {
+        if (in == null) {
+            in = new Point();
+        }
+        ((WindowManager)App.getApplication().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRealSize(in);
+        return in;
     }
 
     /**
