@@ -98,6 +98,29 @@ public class HelperService extends Service {
             }
         });
 
+        floatView.findViewById(R.id.fv_article).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+                if (StudyService.INSTANCE != null) {
+                    ReadHelper.readArticle(StudyService.INSTANCE, null);
+                } else {
+                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        floatView.findViewById(R.id.fv_video).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+                if (StudyService.INSTANCE != null) {
+                    ReadHelper.watchVideo(StudyService.INSTANCE, null);
+                } else {
+                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
         floatView.findViewById(R.id.fv_play).setOnClickListener(new View.OnClickListener(){
             int i = 0;
