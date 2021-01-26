@@ -1,9 +1,11 @@
 package com.cylee.studyup;
 
+import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -11,6 +13,10 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private static final int REQUEST_CODE_PERMISSION = 101;
@@ -48,6 +54,8 @@ public class MainActivity extends Activity {
         boolean checkPermission = PermissionUtil.getAppOps(this);
         boolean checkService = checkAccessibilityOn(this);
 
+        initAudioPermission(this);
+
         if (!checkPermission) {
             ScreenUtil.toast("请开启权限");
             return;
@@ -58,7 +66,34 @@ public class MainActivity extends Activity {
             return;
         }
 
-        ScreenUtil.toast("可以开始学习了，请打开学习强国学习！");
+        ScreenUtil.toast("可以开始学习了，请打开抖音！");
+    }
+
+    private void initAudioPermission(Activity activity) {
+        String[] permissions = {
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                /* 下面是蓝牙用的，可以不申请
+                Manifest.permission.BROADCAST_STICKY,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN
+                */
+        };
+
+        ArrayList<String> toApplyList = new ArrayList<>();
+
+        for (String perm : permissions) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(activity, perm)) {
+                toApplyList.add(perm);
+                // 进入到这里代表没有权限.
+            }
+        }
+        String[] tmpList = new String[toApplyList.size()];
+        if (!toApplyList.isEmpty()) {
+            ActivityCompat.requestPermissions(activity, toApplyList.toArray(tmpList), 123);
+        }
     }
 
     public static boolean checkAccessibilityOn(Context context) {

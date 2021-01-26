@@ -73,7 +73,7 @@ public class StudyService : AccessibilityService() {
                 event.packageName.contains("inputmethod") ||
                 event.packageName.contains("com.android")) return;
 
-            if (event.packageName.equals("cn.xuexi.android")) {
+            if (event.packageName.equals("com.ss.android.ugc.aweme")) {
                 if (!studyAppLaunched) {
                     studyAppLaunched = true;
                 }

@@ -69,70 +69,13 @@ public class HelperService extends Service {
         params.y = ScreenUtil.dp2px(100);
         windowManager.addView(floatView, params);
 
-        floatView.findViewById(R.id.fv_up).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                moveAction(1);
-            }
-        });
-        floatView.findViewById(R.id.fv_down).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                moveAction(0);
-            }
-        });
-        floatView.findViewById(R.id.fv_left).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                moveAction(2);
-            }
-        });
-        floatView.findViewById(R.id.fv_right).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                moveAction(3);
-            }
-        });
-
-        floatView.findViewById(R.id.fv_article).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                if (StudyService.INSTANCE != null) {
-                    ReadHelper.readArticle(StudyService.INSTANCE, null);
-                } else {
-                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        floatView.findViewById(R.id.fv_video).setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                if (StudyService.INSTANCE != null) {
-                    ReadHelper.watchVideo(StudyService.INSTANCE, null);
-                } else {
-                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
 
         floatView.findViewById(R.id.fv_play).setOnClickListener(new View.OnClickListener(){
-            int i = 0;
             @Override
             public void onClick(View v) {
                 if (StudyService.INSTANCE != null) {
-//                    StudyService.INSTANCE.startStudy();
-                    ReadHelper.startLearning(StudyService.INSTANCE, 2);
-//                    ReadHelper.selTab(StudyService.INSTANCE, (i++) % 4, null);
-//                    ReadHelper.navNextPageAndCheck(StudyService.INSTANCE, null, null);
                 } else {
-                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "服务没启动额~", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -143,7 +86,7 @@ public class HelperService extends Service {
                 if (StudyService.INSTANCE != null) {
                     StudyService.INSTANCE.exit();
                 } else {
-                    Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "服务没启动额~", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -156,7 +99,7 @@ public class HelperService extends Service {
         if (StudyService.INSTANCE != null) {
             GestureHelper.moveDirection(StudyService.INSTANCE, action, null);
         } else {
-            Toast.makeText(getApplicationContext(), "学习服务没启动额~", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "服务没启动额~", Toast.LENGTH_SHORT).show();
         }
     }
 

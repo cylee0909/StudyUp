@@ -2,12 +2,11 @@ package com.cylee.studyup;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
-import android.content.Context;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
-import android.view.WindowManager;
+import android.os.Looper;
 
 import androidx.annotation.RequiresApi;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GestureHelper {
     static Point tmpPoint = new Point();
-    static Handler handler = ReadHelper.handler;
+    static Handler handler = new Handler(Looper.getMainLooper());
     static Random random = new Random(System.currentTimeMillis());
 
     interface ActionFilter {
