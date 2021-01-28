@@ -64,9 +64,6 @@ public class StudyService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         LogUtil.d("AccessibilityEventDEBUG" , event.toString())
-        if (event?.packageName?.equals("cn.xuexi.android") ?: false) {
-            checkVideoComplete(event)
-        }
 
         if (event?.eventType == TYPE_WINDOW_STATE_CHANGED) {
             if (event.packageName.equals(application.packageName) ||

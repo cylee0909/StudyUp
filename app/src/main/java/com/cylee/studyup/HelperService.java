@@ -22,6 +22,7 @@ public class HelperService extends Service {
     private static final String CHANNEL_ID = "HELP_SERVICE";
     View floatView;
     static boolean serviceAlive;
+    SoundService2 mSoundService;
 
     @Nullable
     @Override
@@ -74,6 +75,7 @@ public class HelperService extends Service {
             @Override
             public void onClick(View v) {
                 if (StudyService.INSTANCE != null) {
+                    mSoundService.start();
                 } else {
                     Toast.makeText(getApplicationContext(), "服务没启动额~", Toast.LENGTH_SHORT).show();
                 }
@@ -84,6 +86,7 @@ public class HelperService extends Service {
             @Override
             public void onClick(View v) {
                 if (StudyService.INSTANCE != null) {
+                    mSoundService.stop();
                     StudyService.INSTANCE.exit();
                 } else {
                     Toast.makeText(getApplicationContext(), "服务没启动额~", Toast.LENGTH_SHORT).show();
@@ -91,6 +94,8 @@ public class HelperService extends Service {
             }
         });
 
+        mSoundService = new SoundService2();
+        mSoundService.init(this.getApplicationContext());
 
         serviceAlive = true;
     }
@@ -107,6 +112,7 @@ public class HelperService extends Service {
     public void onDestroy() {
         super.onDestroy();
         serviceAlive = false;
+        mSoundService.onDestroy();
         stopForeground(true);
         LogUtil.d("HelperService onDestroy");
         WindowManager windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);

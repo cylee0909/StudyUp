@@ -28,10 +28,17 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.am_permission).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.am_overlay_permission).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_CODE_PERMISSION);
+            }
+        });
+
+        findViewById(R.id.am_audio_permission).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initAudioPermission(MainActivity.this);
             }
         });
 
@@ -53,11 +60,15 @@ public class MainActivity extends Activity {
     void checkEnv() {
         boolean checkPermission = PermissionUtil.getAppOps(this);
         boolean checkService = checkAccessibilityOn(this);
-
-        initAudioPermission(this);
+        boolean checkAudio = checkAudioPermission();
 
         if (!checkPermission) {
-            ScreenUtil.toast("请开启权限");
+            ScreenUtil.toast("请开启权Overlay限");
+            return;
+        }
+
+        if (!checkAudio) {
+            ScreenUtil.toast("请开启权录音及存储限");
             return;
         }
 
@@ -67,6 +78,30 @@ public class MainActivity extends Activity {
         }
 
         ScreenUtil.toast("可以开始学习了，请打开抖音！");
+    }
+
+    boolean checkAudioPermission() {
+        String[] permissions = {
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                /* 下面是蓝牙用的，可以不申请
+                Manifest.permission.BROADCAST_STICKY,
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN
+                */
+        };
+
+        ArrayList<String> toApplyList = new ArrayList<>();
+
+        for (String perm : permissions) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm)) {
+                toApplyList.add(perm);
+                // 进入到这里代表没有权限.
+            }
+        }
+        return toApplyList.isEmpty();
     }
 
     private void initAudioPermission(Activity activity) {

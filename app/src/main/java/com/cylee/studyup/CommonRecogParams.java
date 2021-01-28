@@ -75,6 +75,14 @@ public class CommonRecogParams {
 
         parseParamArr(sp, map);
 
+        if (sp.getBoolean("_tips_sound", false)) { // 声音回调
+//            map.put(SpeechConstant.SOUND_START, R.raw.bdspeech_recognition_start);
+//            map.put(SpeechConstant.SOUND_END, R.raw.bdspeech_speech_end);
+//            map.put(SpeechConstant.SOUND_SUCCESS, R.raw.bdspeech_recognition_success);
+//            map.put(SpeechConstant.SOUND_ERROR, R.raw.bdspeech_recognition_error);
+//            map.put(SpeechConstant.SOUND_CANCEL, R.raw.bdspeech_recognition_cancel);
+        }
+
         if (sp.getBoolean("_outfile", false)) { // 保存录音文件
             map.put(SpeechConstant.ACCEPT_AUDIO_DATA, true); // 目前必须开启此回掉才嫩保存音频
             map.put(SpeechConstant.OUT_FILE, samplePath + "/outfile.pcm");
