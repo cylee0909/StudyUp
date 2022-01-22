@@ -18,17 +18,6 @@
         android:name=".App"
         android:theme="@style/AppTheme">
 
-        <meta-data
-            android:name="com.baidu.speech.APP_ID"
-            android:value="23588970"/>
-
-        <meta-data
-            android:name="com.baidu.speech.API_KEY"
-            android:value="odZutEuvEAIHxczIZxaDTHXR"/>
-        <meta-data
-            android:name="com.baidu.speech.SECRET_KEY"
-            android:value="x24KsKlsTOtTRmbusaTOGamCSAmUDGVS"/>
-
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
