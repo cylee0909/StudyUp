@@ -198,7 +198,7 @@ public class GestureHelper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void movePath(AccessibilityService service, Path path, final Runnable complete) {
-        int d = random.nextInt(200) +  100;
+        int d =  300;
         movePath(service, path, d, complete);
     }
 
@@ -231,7 +231,7 @@ public class GestureHelper {
     }
 
     static float randomDiff() {
-        return random.nextFloat() * 0.3f + 0.2f;
+        return random.nextFloat() * 15f + 12f;
     }
 
     static float centerArea() {
